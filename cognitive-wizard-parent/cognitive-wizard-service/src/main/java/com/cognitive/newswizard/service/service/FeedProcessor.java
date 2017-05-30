@@ -95,6 +95,7 @@ public class FeedProcessor {
 		final Pattern pattern = Pattern.compile("<" + element + "[^>]*>([^<]+)</" + element + ">");
 		final Matcher matcher = pattern.matcher(html);
 		while (matcher.find()) {
+			// TODO evaluate whether it is better to extract matcher.group() instead of matcher.group(1)
 			final String value = matcher.group(1);
 			values.add(value);
 		}
