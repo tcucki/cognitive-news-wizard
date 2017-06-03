@@ -32,6 +32,7 @@ public class RawFeedEntryResource {
 	}
 	
 	@RequestMapping(method=RequestMethod.POST, path = "/compactall")
+	@ResponseBody
 	public String compactAllFeeds() {
 		rawFeedEntryService.compactContentAllEntries();
 		return "ok";
