@@ -1,5 +1,7 @@
 package com.cognitive.newswizard.api.vo.processed;
 
+import java.util.Comparator;
+
 public class MissingProperNounVO {
 
 	private final int count;
@@ -26,4 +28,20 @@ public class MissingProperNounVO {
 	public String getSuggestion() {
 		return suggestion;
 	}
+	
+	public static class MissingProperNounComparator implements Comparator<MissingProperNounVO> {
+
+		public int compare(MissingProperNounVO o1, MissingProperNounVO o2) {
+			if (o1.getCount() < o2.getCount()) {
+				return 1;
+			} else {
+				if (o1.getCount() == o2.getCount()) {
+					return 0;
+				}
+			}
+			return -1;
+		}
+		
+	}
+
 }
