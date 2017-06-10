@@ -13,4 +13,7 @@ public interface RawFeedEntryRepository extends MongoRepository<RawFeedEntryEnti
 	
 	@Query(value="{}", fields="{_id : 1}")
 	List<RawFeedEntryEntity> findAllIds();
+	
+	@Query(value="{_id : ?0}", fields="{publishedDateTime : 1}")
+	RawFeedEntryEntity findPublishedDateTimeById(String id);
 }
