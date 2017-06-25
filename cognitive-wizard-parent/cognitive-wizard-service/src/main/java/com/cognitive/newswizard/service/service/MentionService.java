@@ -1,5 +1,8 @@
 package com.cognitive.newswizard.service.service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -14,6 +17,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
 
+import com.cognitive.newswizard.api.vo.mined.SimpleDailyReportItem;
 import com.cognitive.newswizard.service.entity.FeedTextEntity;
 import com.cognitive.newswizard.service.entity.MentionEntity;
 import com.cognitive.newswizard.service.entity.ProperNounEntity;
@@ -22,6 +26,7 @@ import com.cognitive.newswizard.service.repository.FeedTextRepository;
 import com.cognitive.newswizard.service.repository.MentionRepository;
 import com.cognitive.newswizard.service.repository.ProperNounRepository;
 import com.cognitive.newswizard.service.repository.RawFeedEntryRepository;
+
 
 @Component
 public class MentionService {
@@ -64,6 +69,35 @@ public class MentionService {
 		LOGGER.info("Finished mining feeds extracting mentioning: " + mentionEntities.size());
 		return "Finished mining feeds extracting mentioning: " + mentionEntities.size();
 	}
+	
+	public List<SimpleDailyReportItem> getSimpleDailyReport(final LocalDate start, final LocalDate end) {
+		LOGGER.info("Generating Simple Daily Report for period {} to {}", start, end);
+
+		final List<SimpleDailyReportItem> result = new ArrayList<SimpleDailyReportItem>();
+
+		final Long startTime = java.sql.Date.valueOf(start).getTime();
+		final Long endTime = java.sql.Date.valueOf(end.plus(1, ChronoUnit.DAYS)).getTime();
+		
+		final List<MentionEntity> mentions = mentionRepository.findByPublishedDateTimeBetween(startTime, endTime);
+		LOGGER.info("Processing {} mentions", mentions.size());
+
+		mentions.forEach(mention -> {
+			for (final String properNoun : mention.getProperNoun()) {
+				final LocalDateTime publishedDateTime = new java.sql.Timestamp(mention.getPublishedDateTime()).toLocalDateTime();
+				final java.util.Optional<SimpleDailyReportItem> optionalItem = 
+						result.stream().filter(o -> 
+							o.getProperNoun().equals(properNoun) && o.getDate().equals(publishedDateTime.toLocalDate())).findFirst();
+				final SimpleDailyReportItem item = optionalItem.orElseGet(() -> {
+					final SimpleDailyReportItem newItem = new SimpleDailyReportItem(properNoun, publishedDateTime.toLocalDate());
+					result.add(newItem);
+					return newItem;
+				});
+				item.increment();
+			}
+		});
+		
+		return result;
+	}
 
 	private List<MentionEntity> processFeedPages() {
 		LOGGER.info("Processing feed batches");
@@ -102,15 +136,12 @@ public class MentionService {
 		candidates.forEach(candidate -> {
 			addProperNounIfFound(properNounsBuffer, feedProperNouns, candidate);
 		});
-		
 		feed.getParagraphs().forEach(paragraph -> {
 			final List<String> paragraphCandidates = properNounService.extractProperNouns(feed.getTitle());
 			paragraphCandidates.forEach(candidate -> {
 				addProperNounIfFound(properNounsBuffer, feedProperNouns, candidate);
 			});
 		});
-		
-		//TODO find getPublishedDateTime()
 		if (!feedProperNouns.isEmpty()) {
 			return mentionRepository.save(new MentionEntity(null, feed.getId(), getPublishedDateTime(feed.getRawFeedEntryId()), feedProperNouns.toArray(new String[]{})));
 		}

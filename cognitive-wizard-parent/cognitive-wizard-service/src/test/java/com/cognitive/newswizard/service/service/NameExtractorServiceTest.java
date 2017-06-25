@@ -1,10 +1,14 @@
 package com.cognitive.newswizard.service.service;
 
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +19,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import com.cognitive.newswizard.service.entity.FeedTextEntity;
 import com.cognitive.newswizard.service.repository.FeedTextRepository;
+import com.cognitive.newswizard.service.util.Alpha26Encoder;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -36,12 +41,32 @@ public class NameExtractorServiceTest {
 		System.out.format("*** Reading %d elements on %d pages \n", feedTextPages.getTotalElements(), feedTextPages.getTotalPages());
 		
 		feedTextPages.forEach(feed -> processFeed(feed));
-		if (feedTextPages.hasNext()) {
+		while (feedTextPages.hasNext()) {
 			feedTextPages = feedTextRepository.findAll(feedTextPages.nextPageable());
+			feedTextPages.forEach(feed -> processFeed(feed));
 		}
-		feedTextPages.forEach(feed -> processFeed(feed));
 		
-		properNouns.forEach((k, v) -> System.out.format("%4d - %s\n", v, k));
+//		properNouns.forEach((k, v) -> System.out.format("%4d - %s\n", v, k));
+		System.out.println("Converting...");
+		List<ProperNoumCounter> properNoumCounterList = new ArrayList<>();
+		properNouns.forEach((k, v) -> properNoumCounterList.add(new ProperNoumCounter(v, k)));
+		
+		System.out.println("Ordering...");
+		properNoumCounterList.sort(new ProperNoumCounterComparator());
+		
+		
+		properNoumCounterList.forEach(value -> {
+			if (value.count >= 9) {
+				System.out.format("%d;%s;%s;%s;%s;%d;%s\n", 
+					value.count, 
+					value.encoded.getOriginal(), 
+					value.encoded.getFitted(),
+					value.encoded.getNoAccents(),
+					value.encoded.getUpperCase(),
+					value.encoded.getEncoded(),
+					value.encoded.getDecodedUppercase());
+			}
+		});
 		
 		System.out.println("\nTotal proper nouns found: " + properNouns.size());
 		System.out.println("\nTotal feeds processed: " + feedsProcessed);
@@ -59,7 +84,7 @@ public class NameExtractorServiceTest {
 
 	private void extractProperName(String statement) {
 //		System.out.println("*** Statement: '" + statement + "'");
-		final Matcher matcher = PATTERN.matcher(statement);
+		final Matcher matcher = PATTERN.matcher(StringUtils.stripAccents(statement));
 		while (matcher.find()) {
 			final String properNoun = matcher.group().trim();
 			addToMap(properNoun);
@@ -69,5 +94,36 @@ public class NameExtractorServiceTest {
 
 	private void addToMap(String properNoun) {
 		properNouns.compute(properNoun, (k, v) -> v == null ? 1 : ++v);
+	}
+	
+	public class ProperNoumCounter {
+		private int count;
+		private Alpha26Encoder.EncodeInfo encoded;
+		public ProperNoumCounter(final int count, final String name) {
+			this.count = count;
+			this.encoded = new Alpha26Encoder.EncodeInfo(name);
+		}
+		public int getCount() {
+			return count;
+		}
+		public Alpha26Encoder.EncodeInfo getEncoded() {
+			return encoded;
+		}
+	}
+	
+	class ProperNoumCounterComparator implements Comparator<ProperNoumCounter> {
+
+		@Override
+		public int compare(ProperNoumCounter o1, ProperNoumCounter o2) {
+			if (o1.count < o2.count) {
+				return 1;
+			} else {
+				if (o1.count == o2.count) {
+					return 0;
+				}
+			}
+			return -1;
+		}
+		
 	}
 }
