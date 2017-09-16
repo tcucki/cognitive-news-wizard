@@ -1,6 +1,6 @@
 # Cognitive Wizard Service
 
-- Contains services to register, process and provide feed data.
+Contains services to register, process and provide feed data.
 
 ## Service Catalog
 
@@ -47,6 +47,7 @@ CSV version of `/propernoun/missing` of the form
 
 - POST `/propernoun/missing/registerbatch` `String` returns `String`  
 Registers a batch of proper nouns of the form  
+
 | counter | proper noun | actual proper noun | ignore |
 |---------|-------------|--------------------|--------|
 | 999     | name        | name               | X      |
