@@ -12,6 +12,7 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.web.client.HttpServerErrorException;
 
 import com.cognitive.newswizard.agent.client.RawFeedEntryClient;
 import com.cognitive.newswizard.api.vo.newsfeed.FeedGroupEntryVO;
@@ -47,10 +48,10 @@ public class FeedReaderAgent {
 	
 	public void execute() {
 		final Long start = System.currentTimeMillis();
-		LOGGER.info("Executing feed read agent for group {} - '{}'", feedGroup.getId(), feedGroup.getName());
+		LOGGER.info("Executing feed read agent for group [{} - '{}']", feedGroup.getId(), feedGroup.getName());
 		feedGroup.getEntries().forEach(feed -> processFeed(feed));
 		final Double seconds = (System.currentTimeMillis() - start) / 1000d;
-		LOGGER.info("All feeds processed in {} secods\n************************************************************************************", numberFormat.format(seconds));
+		LOGGER.info("All feeds processed for group [{} - '{}'] in {} secods\n************************************************************************************", feedGroup.getId(), feedGroup.getName(), numberFormat.format(seconds));
 	}
 
 	private void processFeed(final FeedGroupEntryVO feedVO) {
@@ -59,7 +60,7 @@ public class FeedReaderAgent {
 		try {
 			final SyndFeed feed = new SyndFeedInput().build(new XmlReader(new URL(feedVO.getUrl())));
 			LOGGER.info("Processing {}", feed.getTitle());
-			feed.getEntries().forEach(feedEntry -> processFeedEntry(feedEntry, feedVO.getId()));
+			feed.getEntries().forEach(feedEntry -> processFeedEntry(feedEntry, feedVO.getId(), feedVO.getName()));
 		} catch (FeedException | IOException e) {
 			throw new RuntimeException("Exception on read feed", e);
 		}
@@ -67,7 +68,7 @@ public class FeedReaderAgent {
 		LOGGER.info("Finished processing feed {} in {} seconds - {}\n---------------------------------------------------------------------", feedVO.getName(), numberFormat.format(seconds), feedVO.getUrl());
 	}
 
-	private void processFeedEntry(final SyndEntry feedEntry, final String feedGroupEntryId) {
+	private void processFeedEntry(final SyndEntry feedEntry, final String feedGroupEntryId, final String feedGroupEntryName) {
 		if (processedFeedEntryUris.contains(feedEntry.getUri())) {
 			return;
 		};
@@ -77,14 +78,18 @@ public class FeedReaderAgent {
 		try {
 			feedEntryContent = readFeedEntryContent(feedEntry.getLink());
 		} catch (Exception e) {
-			LOGGER.error("Exception while reading feed content", e);
+			LOGGER.error("Exception while reading feed content [{} - {} | {} - {}]", feedGroup.getId(), feedGroup.getName(), feedGroupEntryId, feedGroupEntryName, e);
 			return;
 		}
 		final RawFeedEntryVO rawFeedEntryVO = new RawFeedEntryVO(
 				null, feedEntry.getUri(), feedEntry.getTitle(), feedEntry.getLink(), 
 				feedEntry.getPublishedDate() == null ? null : feedEntry.getPublishedDate().getTime(), 
 				feedEntryContent, feedGroupEntryId, null);
-		rawFeedEntryClient.create(rawFeedEntryVO);
+		try {
+			rawFeedEntryClient.create(rawFeedEntryVO);
+		} catch (HttpServerErrorException e) {
+			LOGGER.error("Exception on processing/persisting feed entry [{} - {} | {} - {}]", feedGroup.getId(), feedGroup.getName(), feedGroupEntryId, feedGroupEntryName, e);
+		}
 		processedFeedEntryUris.add(feedEntry.getUri());
 	}
 

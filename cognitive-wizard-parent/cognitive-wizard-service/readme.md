@@ -38,12 +38,13 @@ Process all raw feeds, extracting relevant text content, saving on *feed_text* c
 - GET `/propernoun/missing` returns `List<MissingProperNounVO>`  
 Extracts a report with all proper nouns not registered on *proper_noun* collection
 
-- GET `/propernoun/missing/report` returns `String`
+- GET `/propernoun/missing/report` `boolean lookInParagraphs`, `int countThreshold` returns `String`
 CSV version of `/propernoun/missing` of the form  
 
 | missing proper noun counter | proper noun | suggestion |
 |-----------------------------|-------------|------------|
 |999                          | name        | name       |
+
 
 - POST `/propernoun/missing/registerbatch` `String` returns `String`  
 Registers a batch of proper nouns of the form  

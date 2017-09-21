@@ -7,7 +7,7 @@ import org.springframework.data.mongodb.repository.Query;
 
 import com.cognitive.newswizard.service.entity.RawFeedEntryEntity;
 
-public interface RawFeedEntryRepository extends MongoRepository<RawFeedEntryEntity, String>{
+public interface RawFeedEntryRepository extends MongoRepository<RawFeedEntryEntity, String> {
 
 	RawFeedEntryEntity findByFeedEntryId(final String feedEntryId);
 	
