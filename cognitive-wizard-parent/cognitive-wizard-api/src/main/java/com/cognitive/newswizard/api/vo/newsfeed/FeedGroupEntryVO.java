@@ -13,16 +13,19 @@ public class FeedGroupEntryVO extends AbstractValueObject {
 	
 	private Long lastRead;
 	
+	private String code;
+	
 	public FeedGroupEntryVO() {
 		super();
 	}
 
-	public FeedGroupEntryVO(final String id, final String name, final String url, final Long lastRead) {
+	public FeedGroupEntryVO(final String id, final String name, final String url, final Long lastRead, final String code) {
 		super();
 		this.id = id;
 		this.name = name;
 		this.url = url;
 		this.lastRead = lastRead;
+		this.code = code;
 	}
 
 	public String getId() {
@@ -55,6 +58,14 @@ public class FeedGroupEntryVO extends AbstractValueObject {
 
 	public void setLastRead(Long lastRead) {
 		this.lastRead = lastRead;
+	}
+
+	public String getCode() {
+		return code;
+	}
+
+	public void setCode(String code) {
+		this.code = code;
 	}
 
 	@Override

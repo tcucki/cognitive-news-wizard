@@ -20,6 +20,8 @@ import com.cognitive.newswizard.service.translator.FeedGroupEntryTranslator;
 public class FeedGroupEntryService {
 	
 	private final Logger LOGGER = LoggerFactory.getLogger(FeedGroupEntryService.class);
+	
+	private static final FeedGroupEntryVO EMPTY_FEED_GROUP_ENTRY = new FeedGroupEntryVO("", "", "", 0l, "NONE");
 
 	private final FeedGroupEntryRepository feedGroupEntryRepository;
 	private final FeedGroupRepository feedGroupRepository;
@@ -61,5 +63,9 @@ public class FeedGroupEntryService {
 	
 	private void loadSnapshot() {
 		feedGroupEntryRepository.findAll().forEach(entry -> feedGroupEntrySnapshot.put(entry.getId(), FeedGroupEntryTranslator.toValueObject(entry)));
+	}
+	
+	public FeedGroupEntryVO getFromSnapshotOrDefault(final String id) {
+		return getFromSnapshot(id).orElse(EMPTY_FEED_GROUP_ENTRY);
 	}
 }

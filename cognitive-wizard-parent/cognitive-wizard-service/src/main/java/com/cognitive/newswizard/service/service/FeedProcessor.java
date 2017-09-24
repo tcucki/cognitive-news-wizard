@@ -38,10 +38,13 @@ public class FeedProcessor {
 	
 	private final RawFeedEntryRepository rawFeedEntryRepository;
 	
+	private final FeedGroupEntryService feedGroupEntryService;
+	
 	@Autowired
-	public FeedProcessor(final FeedTextRepository feedTextRepository, final RawFeedEntryRepository rawFeedEntryRepository) {
+	public FeedProcessor(final FeedTextRepository feedTextRepository, final RawFeedEntryRepository rawFeedEntryRepository, final FeedGroupEntryService feedGroupEntryService) {
 		this.feedTextRepository = feedTextRepository;
 		this.rawFeedEntryRepository = rawFeedEntryRepository;
+		this.feedGroupEntryService = feedGroupEntryService;
 	}
 	
 	public void processAllFeeds() {
@@ -51,7 +54,7 @@ public class FeedProcessor {
 		long counter = 0;
 		LOGGER.info("Found {} raw feeds to process", allRawFeedEntities.size());
 		for (final RawFeedEntryEntity rawFeedEntryEntity : allRawFeedEntities) {
-			processFeed(RawFeedEntryTranslator.toValueObject(rawFeedEntryEntity));
+			processFeed(feedGroupEntryService.getFromSnapshotOrDefault(rawFeedEntryEntity.getFeedGroupEntryId()).getCode(), RawFeedEntryTranslator.toValueObject(rawFeedEntryEntity));
 			counter++;
 			if (counter % 10 == 0) {
 				LOGGER.info("{} feeds processed", counter);
@@ -61,10 +64,10 @@ public class FeedProcessor {
 		LOGGER.info("Finished processing all raw feeds ({}) in {} seconds\n---------------------------------------------------------------------", counter, numberFormat.format(seconds));
 	}
 
-	public FeedTextVO processFeed(final RawFeedEntryVO rawFeedEntryVO) {
+	public FeedTextVO processFeed(final String feedGroupEntryCode, final RawFeedEntryVO rawFeedEntryVO) {
 		
 		if (StringUtils.isEmpty(rawFeedEntryVO.getContent()) && rawFeedEntryVO.getCompactContent() == null) {
-			throw new IllegalArgumentException(String.format("No content found to be processed for feed entry id '%s'", rawFeedEntryVO.getId()));
+			throw new IllegalArgumentException(String.format("[{}] No content found to be processed for feed entry id '%s'",feedGroupEntryCode, rawFeedEntryVO.getId()));
 		}
 		
 		final FeedTextVO feedText = new FeedTextVO(null, rawFeedEntryVO.getId(), rawFeedEntryVO.getTitle());
@@ -77,7 +80,7 @@ public class FeedProcessor {
 		feedText.getParagraphs().addAll(getAllElementValues("div", content));
 		
 		if (feedText.getParagraphs().isEmpty()) {
-			LOGGER.warn("No content found for raw feed entry id {}\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", rawFeedEntryVO.getFeedEntryId());
+			LOGGER.warn("[{}] No content found for raw feed entry id {}\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", feedGroupEntryCode, rawFeedEntryVO.getFeedEntryId());
 		}
 		
 		final FeedTextEntity entity = feedTextRepository.save(FeedTextTranslator.toEntity(feedText));

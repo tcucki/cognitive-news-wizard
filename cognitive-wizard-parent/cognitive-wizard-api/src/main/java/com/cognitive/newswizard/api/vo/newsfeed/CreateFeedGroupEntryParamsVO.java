@@ -15,16 +15,19 @@ public class CreateFeedGroupEntryParamsVO {
 	private String url;
 	
 	private String feedGroupId;
+	
+	private String code;
 
 	public CreateFeedGroupEntryParamsVO() {
 	}
 	
-	public CreateFeedGroupEntryParamsVO(final String id, final String name, final String url, final String feedGroupId) {
+	public CreateFeedGroupEntryParamsVO(final String id, final String name, final String url, final String feedGroupId, final String code) {
 		super();
 		this.id = id;
 		this.name = name;
 		this.url = url;
 		this.feedGroupId = feedGroupId;
+		this.code = code;
 	}
 
 	public String getId() {
@@ -58,4 +61,13 @@ public class CreateFeedGroupEntryParamsVO {
 	public void setFeedGroupId(String feedGroupId) {
 		this.feedGroupId = feedGroupId;
 	}
+
+	public String getCode() {
+		return code;
+	}
+
+	public void setCode(String code) {
+		this.code = code;
+	}
+	
 }

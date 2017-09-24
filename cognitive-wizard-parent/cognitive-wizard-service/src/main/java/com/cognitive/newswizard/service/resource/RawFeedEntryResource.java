@@ -37,6 +37,9 @@ public class RawFeedEntryResource {
 		try {
 			// do not return compacted content
 			final RawFeedEntryVO persisted = rawFeedEntryService.create(rawFeedEntryVO);
+			if (persisted == null) {
+				return null;
+			}
 			persisted.setContent(rawFeedEntryVO.getContent());
 			persisted.setCompactContent(null);
 			return persisted;

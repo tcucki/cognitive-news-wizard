@@ -25,9 +25,13 @@ public class FeedGroupEntryResource {
 	@ResponseBody
 	public FeedGroupEntryVO create(
 			@RequestBody final CreateFeedGroupEntryParamsVO createParamsVO) {
-		final FeedGroupEntryVO feedGroupEntryVO = new FeedGroupEntryVO(
-				createParamsVO.getId(), createParamsVO.getName(),
-				createParamsVO.getUrl(), null);
+		final FeedGroupEntryVO feedGroupEntryVO = 
+			new FeedGroupEntryVO(
+				createParamsVO.getId(), 
+				createParamsVO.getName(),
+				createParamsVO.getUrl(), 
+				null,
+				createParamsVO.getCode());
 		return feedGroupEntryService.create(feedGroupEntryVO, createParamsVO.getFeedGroupId());
 	}
 

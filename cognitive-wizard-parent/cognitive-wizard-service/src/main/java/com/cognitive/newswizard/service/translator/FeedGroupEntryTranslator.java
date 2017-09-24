@@ -9,11 +9,11 @@ import com.cognitive.newswizard.service.entity.FeedGroupEntryEntity;
 public class FeedGroupEntryTranslator {
 
 	public static FeedGroupEntryEntity toEntity(final FeedGroupEntryVO vo, final String feedGroupId) {
-		return new FeedGroupEntryEntity(vo.getId(), vo.getName(), vo.getUrl(), vo.getLastRead(), feedGroupId);
+		return new FeedGroupEntryEntity(vo.getId(), vo.getName(), vo.getUrl(), vo.getLastRead(), feedGroupId, vo.getCode());
 	}
 	
 	public static FeedGroupEntryVO toValueObject(final FeedGroupEntryEntity entity) {
-		return new FeedGroupEntryVO(entity.getId(), entity.getName(), entity.getUrl(), entity.getLastRead());
+		return new FeedGroupEntryVO(entity.getId(), entity.getName(), entity.getUrl(), entity.getLastRead(), entity.getCode());
 	}
 	
 	public static List<FeedGroupEntryVO> toValueObjects(final List<FeedGroupEntryEntity> entities) {

@@ -52,20 +52,26 @@ public class RawFeedEntryService {
 	}
 
 	public RawFeedEntryVO create(final RawFeedEntryVO rawFeedEntryVO) {
+		final FeedGroupEntryVO feedGroupEntryVO = feedGroupEntryService.getFromSnapshotOrDefault(rawFeedEntryVO.getFeedGroupEntryId());
 		final RawFeedEntryEntity existingEntity = rawFeedEntryRepository.findByFeedEntryId(rawFeedEntryVO.getFeedEntryId());
 		if (existingEntity != null) {
-			LOGGER.info("Skipping {} as it is alredy registered", rawFeedEntryVO.getFeedEntryId());
+			LOGGER.info("[{}] Skipping {} as it is alredy registered", feedGroupEntryVO.getCode(), rawFeedEntryVO.getFeedEntryId());
 			return RawFeedEntryTranslator.toValueObject(existingEntity);
 		}
-		LOGGER.info("Creating new raw feed entry {}", rawFeedEntryVO.getTitle());
+		LOGGER.info("[{}] Creating new raw feed entry {}", feedGroupEntryVO.getCode(), rawFeedEntryVO.getTitle());
 		rawFeedEntryVO.setCompactContent(ZipUtils.compress(rawFeedEntryVO.getContent()));
 		rawFeedEntryVO.setContent(null);
 		final RawFeedEntryEntity entity = RawFeedEntryTranslator.toEntity(rawFeedEntryVO);
 		final RawFeedEntryVO persisted = RawFeedEntryTranslator.toValueObject(rawFeedEntryRepository.save(entity));
 		try {
-			feedProcessor.processFeed(persisted);
+			feedProcessor.processFeed(feedGroupEntryVO.getCode(), persisted);
 		} catch (IllegalArgumentException iae) {
-			LOGGER.warn("IllegalArgumentException on processing feed. RawFeed is persisted though it is not processed.\nFeedGroupEntryId: {}\nFeed title: {}\nError: {}", rawFeedEntryVO.getFeedGroupEntryId(), rawFeedEntryVO.getTitle(), iae.getMessage());
+			LOGGER.warn("[{}] IllegalArgumentException on processing feed. "
+					+ "RawFeed is being deleted.\n"
+					+ "FeedGroupEntryId: {}\nFeed title: {}\nError: {}", 
+					feedGroupEntryVO.getCode(), rawFeedEntryVO.getFeedGroupEntryId(), rawFeedEntryVO.getTitle(), iae.getMessage());
+			rawFeedEntryRepository.delete(persisted.getId());
+			return null;
 		}
 		return persisted;
 	}
@@ -122,7 +128,7 @@ public class RawFeedEntryService {
 		
 		return new RawFeedReportItem(
 				item.getId(),
-				feedGroupEntryService.getFromSnapshot(item.getId()).orElse(new FeedGroupEntryVO()).getName(),
+				feedGroupEntryService.getFromSnapshotOrDefault(item.getId()).getName(),
 				item.getCount());
 	}
 }
