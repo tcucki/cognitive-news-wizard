@@ -54,7 +54,7 @@ public class FeedReaderAgent {
 	
 	public void execute() {
 		final Long start = System.currentTimeMillis();
-		LOGGER.info("Executing feed read agent for group [{} - '{}']", feedGroup.getId(), feedGroup.getName());
+		LOGGER.info("\n************************************************************************************\nExecuting feed read agent for group [{} - '{}']", feedGroup.getId(), feedGroup.getName());
 		feedGroup.getEntries().forEach(feed -> processFeed(feed));
 		final Double seconds = (System.currentTimeMillis() - start) / 1000d;
 		LOGGER.info("All feeds processed for group [{} - '{}'] in {} secods\n************************************************************************************", feedGroup.getId(), feedGroup.getName(), numberFormat.format(seconds));
@@ -79,6 +79,7 @@ public class FeedReaderAgent {
 			return;
 		};
 		// TODO - verify whether feedEntry has content, so it doesn't need to be re-downloaded (like Brasil - Exame)
+		final Long start = System.currentTimeMillis();
 		LOGGER.info("[{}] Processing feed entry {} - {} '{}'", feedGroupEntryCode, feedEntry.getPublishedDate(), feedEntry.getTitle(), feedEntry.getLink());
 		String feedEntryContent;
 		try {
@@ -95,19 +96,32 @@ public class FeedReaderAgent {
 				feedEntry.getPublishedDate() == null ? null : feedEntry.getPublishedDate().getTime(), 
 				feedEntryContent, feedGroupEntryId, null);
 		try {
+			final Long serviceStart = System.currentTimeMillis();
+			LOGGER.info("[{}] Sending entry to service {} '{}'", feedGroupEntryCode, feedEntry.getTitle(), feedEntry.getLink());
 			if (rawFeedEntryClient.create(rawFeedEntryVO) != null) {
 				processedFeedEntryUris.add(feedEntry.getUri());
 			}
+			final Double seconds = (System.currentTimeMillis() - serviceStart) / 1000d;
+			LOGGER.info("[{}] Processing feed time on service {} seconds entry {} '{}'", feedGroupEntryCode, numberFormat.format(seconds), feedEntry.getTitle(), feedEntry.getLink());
 		} catch (HttpServerErrorException e) {
 			LOGGER.error("[{}] Exception on processing/persisting feed entry [{} - {} | {} - {}]", feedGroupEntryCode, feedGroup.getId(), feedGroup.getName(), feedGroupEntryId, feedGroupEntryName, e);
 		}
+		final Double totalSeconds = (System.currentTimeMillis() - start) / 1000d;
+		LOGGER.info("[{}] Total processing feed time {} seconds entry {} '{}'", feedGroupEntryCode, numberFormat.format(totalSeconds), feedEntry.getTitle(), feedEntry.getLink());
 	}
 	
 	private String readFeedEntryContent(final String link, final String feedGroupEntryCode) {
 		
+		final Long start = System.currentTimeMillis();
 		LOGGER.info("[{}] Reading content from {}", feedGroupEntryCode, link);
 
-		return readFeedEntryContentInternal(link, feedGroupEntryCode, 0);
+		final String content = readFeedEntryContentInternal(link, feedGroupEntryCode, 0);
+
+		final Double seconds = (System.currentTimeMillis() - start) / 1000d;
+
+		LOGGER.info("[{}] Content read in {} seconds from {}", feedGroupEntryCode, numberFormat.format(seconds), link);
+
+		return content;
 	}
 
 	private String readFeedEntryContentInternal(final String link, final String feedGroupEntryCode, final int count) {
