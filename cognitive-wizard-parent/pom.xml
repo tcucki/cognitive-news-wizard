@@ -17,5 +17,7 @@
 		<module>cognitive-wizard-agent</module>
 		<module>cognitive-wizard-api</module>
 		<module>cognitive-wizard-service</module>
+		
+		<module>cognitive-wizard-nlp-models</module>
 	</modules>
 </project>
