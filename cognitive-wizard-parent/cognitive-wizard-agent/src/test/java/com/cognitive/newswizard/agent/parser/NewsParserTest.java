@@ -21,7 +21,8 @@ public class NewsParserTest {
 	@Test
 	public void parseNewsTest() {
 //		final String url = "http://www.bbc.co.uk/news/election-2017-39930865";
-		final String url = "http://exame.abril.com.br/brasil/lava-jato-diz-que-caseiro-informava-lula-sobre-dia-a-dia-de-sitio";
+//		final String url = "http://exame.abril.com.br/brasil/lava-jato-diz-que-caseiro-informava-lula-sobre-dia-a-dia-de-sitio";
+		final String url = "https://g1.globo.com/mundo/noticia/o-voluntario-que-resgatou-centenas-de-vitimas-dos-dois-terremotos-mais-fortes-da-historia-recente-do-mexico.ghtml";
 		final String content = readNews(url);
 //		System.out.println(content);
 		System.out.println(content.length());
