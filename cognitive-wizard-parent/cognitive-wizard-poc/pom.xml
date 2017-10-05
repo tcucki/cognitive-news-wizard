@@ -1,21 +1,16 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>com.cognitive.newswizard</groupId>
-	<artifactId>cognitive-wizard-service</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
-	<packaging>jar</packaging>
-
-	<name>cognitive-wizard-service</name>
-	<description>Coginitive Wizard Service Processor</description>
+	<artifactId>cognitive-wizard-poc</artifactId>
+	<name>Cognitive Wizard POC</name>
+	<description>Contains Proof of Concept tests</description>
 
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
 		<version>1.5.7.RELEASE</version>
-		<relativePath/> <!-- lookup parent from repository -->
+		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
 
 	<properties>
@@ -32,27 +27,19 @@
 			<version>${newswizard.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>org.jsoup</groupId>
-			<artifactId>jsoup</artifactId>
-			<version>1.10.2</version>
+			<groupId>com.cognitive.newswizard</groupId>
+			<artifactId>cognitive-wizard-agent</artifactId>
+			<version>${newswizard.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-web</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-data-mongodb</artifactId>
+			<groupId>com.cognitive.newswizard</groupId>
+			<artifactId>cognitive-wizard-service</artifactId>
+			<version>${newswizard.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.cognitive.newswizard</groupId>
 			<artifactId>cognitive-wizard-nlp-models</artifactId>
 			<version>${newswizard.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.opennlp</groupId>
-			<artifactId>opennlp-tools</artifactId>
-			<version>1.8.2</version>
 		</dependency>
 
 		<dependency>
@@ -70,5 +57,4 @@
 			</plugin>
 		</plugins>
 	</build>
-
 </project>

@@ -6,6 +6,12 @@
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>Cognitive Wizard Parent</name>
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+		<java.version>1.8</java.version>
+		<newswizard.version>0.0.1-SNAPSHOT</newswizard.version>
+	</properties>
 	<dependencies>
 		<dependency>
 			<groupId>org.apache.commons</groupId>
@@ -17,7 +23,7 @@
 		<module>cognitive-wizard-agent</module>
 		<module>cognitive-wizard-api</module>
 		<module>cognitive-wizard-service</module>
-		
 		<module>cognitive-wizard-nlp-models</module>
+		<module>cognitive-wizard-poc</module>
 	</modules>
 </project>
