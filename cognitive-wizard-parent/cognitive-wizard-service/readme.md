@@ -4,10 +4,10 @@ Contains services to register, process and provide feed data.
 
 ## Service Catalog
 
-### /feedgroup
+### /feedsourcegroup
 
-- POST `/feedgroup/create` argument `FeedGroupVO` returns `FeedGroupVO`  
-Creates a Feed Group
+- POST `/feedsourcegroup/create` argument `FeedGroupVO` returns `FeedGroupVO`  
+Creates a Feed Source Group
 
 
 - GET `/feedgroup/` returns `List<FeedGroupVO>`  

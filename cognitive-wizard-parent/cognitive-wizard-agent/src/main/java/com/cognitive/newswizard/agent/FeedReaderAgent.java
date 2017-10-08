@@ -19,7 +19,7 @@ import org.springframework.web.client.RestTemplate;
 
 import com.cognitive.newswizard.agent.client.RawFeedEntryClient;
 import com.cognitive.newswizard.api.vo.newsfeed.FeedGroupEntryVO;
-import com.cognitive.newswizard.api.vo.newsfeed.FeedGroupVO;
+import com.cognitive.newswizard.api.vo.newsfeed.FeedSourceGroupVO;
 import com.cognitive.newswizard.api.vo.newsfeed.RawFeedEntryVO;
 import com.rometools.rome.feed.synd.SyndEntry;
 import com.rometools.rome.feed.synd.SyndFeed;
@@ -31,7 +31,7 @@ public class FeedReaderAgent {
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(FeedReaderAgent.class);
 	
-	private final FeedGroupVO feedGroup;
+	private final FeedSourceGroupVO feedSourceGroup;
 	
 	private final RawFeedEntryClient rawFeedEntryClient;
 	
@@ -41,23 +41,23 @@ public class FeedReaderAgent {
 	
 	private final RestTemplate restTemplate;
 
-	public FeedReaderAgent(final FeedGroupVO feedGroup, final RawFeedEntryClient rawFeedEntryClient) {
-		this.feedGroup = feedGroup;
+	public FeedReaderAgent(final FeedSourceGroupVO feedSourceGroup, final RawFeedEntryClient rawFeedEntryClient) {
+		this.feedSourceGroup = feedSourceGroup;
 		this.rawFeedEntryClient = rawFeedEntryClient;
 		processedFeedEntryUris = new ArrayList<String>();
 		restTemplate = new RestTemplate();
 	}
 
-	public FeedGroupVO getFeedGroup() {
-		return feedGroup;
+	public FeedSourceGroupVO getFeedSourceGroup() {
+		return feedSourceGroup;
 	}
 	
 	public void execute() {
 		final Long start = System.currentTimeMillis();
-		LOGGER.info("\n************************************************************************************\nExecuting feed read agent for group [{} - '{}']", feedGroup.getId(), feedGroup.getName());
-		feedGroup.getEntries().forEach(feed -> processFeed(feed));
+		LOGGER.info("\n************************************************************************************\nExecuting feed read agent for group [{} - '{}']", feedSourceGroup.getId(), feedSourceGroup.getName());
+		feedSourceGroup.getEntries().forEach(feed -> processFeed(feed));
 		final Double seconds = (System.currentTimeMillis() - start) / 1000d;
-		LOGGER.info("All feeds processed for group [{} - '{}'] in {} secods\n************************************************************************************", feedGroup.getId(), feedGroup.getName(), numberFormat.format(seconds));
+		LOGGER.info("All feeds processed for group [{} - '{}'] in {} secods\n************************************************************************************", feedSourceGroup.getId(), feedSourceGroup.getName(), numberFormat.format(seconds));
 	}
 
 	private void processFeed(final FeedGroupEntryVO feedVO) {
@@ -88,7 +88,7 @@ public class FeedReaderAgent {
 				LOGGER.warn("[{}] Empty content for feed {}\n{}", feedGroupEntryCode, feedEntry.getTitle(), feedEntry.getLink());
 			}
 		} catch (Exception e) {
-			LOGGER.error("[{}] Exception while reading feed content [{} - {} | {} - {}]", feedGroupEntryCode, feedGroup.getId(), feedGroup.getName(), feedGroupEntryId, feedGroupEntryName, e);
+			LOGGER.error("[{}] Exception while reading feed content [{} - {} | {} - {}]", feedGroupEntryCode, feedSourceGroup.getId(), feedSourceGroup.getName(), feedGroupEntryId, feedGroupEntryName, e);
 			return;
 		}
 		final RawFeedEntryVO rawFeedEntryVO = new RawFeedEntryVO(
@@ -104,7 +104,7 @@ public class FeedReaderAgent {
 			final Double seconds = (System.currentTimeMillis() - serviceStart) / 1000d;
 			LOGGER.info("[{}] Processing feed time on service {} seconds entry {} '{}'", feedGroupEntryCode, numberFormat.format(seconds), feedEntry.getTitle(), feedEntry.getLink());
 		} catch (HttpServerErrorException e) {
-			LOGGER.error("[{}] Exception on processing/persisting feed entry [{} - {} | {} - {}]", feedGroupEntryCode, feedGroup.getId(), feedGroup.getName(), feedGroupEntryId, feedGroupEntryName, e);
+			LOGGER.error("[{}] Exception on processing/persisting feed entry [{} - {} | {} - {}]", feedGroupEntryCode, feedSourceGroup.getId(), feedSourceGroup.getName(), feedGroupEntryId, feedGroupEntryName, e);
 		}
 		final Double totalSeconds = (System.currentTimeMillis() - start) / 1000d;
 		LOGGER.info("[{}] Total processing feed time {} seconds entry {} '{}'", feedGroupEntryCode, numberFormat.format(totalSeconds), feedEntry.getTitle(), feedEntry.getLink());

@@ -13,7 +13,7 @@ import org.springframework.util.StringUtils;
 import com.cognitive.newswizard.api.vo.newsfeed.FeedGroupEntryVO;
 import com.cognitive.newswizard.service.entity.FeedGroupEntryEntity;
 import com.cognitive.newswizard.service.repository.FeedGroupEntryRepository;
-import com.cognitive.newswizard.service.repository.FeedGroupRepository;
+import com.cognitive.newswizard.service.repository.FeedSourceGroupRepository;
 import com.cognitive.newswizard.service.translator.FeedGroupEntryTranslator;
 
 @Component
@@ -24,22 +24,22 @@ public class FeedGroupEntryService {
 	private static final FeedGroupEntryVO EMPTY_FEED_GROUP_ENTRY = new FeedGroupEntryVO("", "", "", 0l, "NONE");
 
 	private final FeedGroupEntryRepository feedGroupEntryRepository;
-	private final FeedGroupRepository feedGroupRepository;
+	private final FeedSourceGroupRepository feedSourceGroupRepository;
 	
 	private final Map<String, FeedGroupEntryVO> feedGroupEntrySnapshot; // TODO implement actual snapshot
 
 	@Autowired
-	public FeedGroupEntryService(FeedGroupEntryRepository repository, final FeedGroupRepository feedGroupRepository) {
+	public FeedGroupEntryService(FeedGroupEntryRepository repository, final FeedSourceGroupRepository feedSourceGroupRepository) {
 		this.feedGroupEntryRepository = repository;
-		this.feedGroupRepository = feedGroupRepository;
+		this.feedSourceGroupRepository = feedSourceGroupRepository;
 		feedGroupEntrySnapshot = new HashMap<String, FeedGroupEntryVO>();
 		loadSnapshot();
 	}
 
-	public FeedGroupEntryVO create(final FeedGroupEntryVO feedGroupEntryVO, final String feedGroupId) {
-		validateFeedGroupId(feedGroupId);
+	public FeedGroupEntryVO create(final FeedGroupEntryVO feedGroupEntryVO, final String feedSourceGroupId) {
+		validateFeedGroupId(feedSourceGroupId);
 		LOGGER.info("Creating new feed group entry: {}", feedGroupEntryVO);
-		final FeedGroupEntryEntity entity = FeedGroupEntryTranslator.toEntity(feedGroupEntryVO, feedGroupId);
+		final FeedGroupEntryEntity entity = FeedGroupEntryTranslator.toEntity(feedGroupEntryVO, feedSourceGroupId);
 		final FeedGroupEntryVO saved = FeedGroupEntryTranslator.toValueObject(feedGroupEntryRepository.save(entity));
 		feedGroupEntrySnapshot.put(saved.getId(), saved);
 		return saved;
@@ -52,12 +52,12 @@ public class FeedGroupEntryService {
 		return Optional.empty();
 	}
 
-	private void validateFeedGroupId(final String feedGroupId) {
-		if (StringUtils.isEmpty(feedGroupId)) {
-			throw new IllegalArgumentException("Empty Feed Group id is not allowed");
+	private void validateFeedGroupId(final String feedSourceGroupId) {
+		if (StringUtils.isEmpty(feedSourceGroupId)) {
+			throw new IllegalArgumentException("Empty Feed Source Group id is not allowed");
 		}
-		if (!feedGroupRepository.exists(feedGroupId)) {
-			throw new IllegalArgumentException(String.format("Feed Group id '%s' not found", feedGroupId));
+		if (!feedSourceGroupRepository.exists(feedSourceGroupId)) {
+			throw new IllegalArgumentException(String.format("Feed Group id '%s' not found", feedSourceGroupId));
 		}
 	}
 	

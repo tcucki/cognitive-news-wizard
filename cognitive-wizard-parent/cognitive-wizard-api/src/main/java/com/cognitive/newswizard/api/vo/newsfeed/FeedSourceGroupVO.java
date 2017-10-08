@@ -10,7 +10,7 @@ import com.cognitive.newswizard.api.vo.AbstractValueObject;
  *
  */
 @SuppressWarnings("serial")
-public class FeedGroupVO extends AbstractValueObject {
+public class FeedSourceGroupVO extends AbstractValueObject {
 
 	/**
 	 * Entity's ID
@@ -39,10 +39,10 @@ public class FeedGroupVO extends AbstractValueObject {
 	
 	private List<FeedGroupEntryVO> entries;
 	
-	public FeedGroupVO() {
+	public FeedSourceGroupVO() {
 	}
 
-	public FeedGroupVO(final String id, final String name,
+	public FeedSourceGroupVO(final String id, final String name,
 			final String description, final Long creationDateTime,
 			final Long refreshPeriod, final List<FeedGroupEntryVO> entries) {
 		super();
@@ -118,7 +118,7 @@ public class FeedGroupVO extends AbstractValueObject {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		FeedGroupVO other = (FeedGroupVO) obj;
+		FeedSourceGroupVO other = (FeedSourceGroupVO) obj;
 		if (id == null) {
 			if (other.id != null)
 				return false;

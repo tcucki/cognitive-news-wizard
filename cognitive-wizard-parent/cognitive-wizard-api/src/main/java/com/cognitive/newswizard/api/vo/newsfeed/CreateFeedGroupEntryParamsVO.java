@@ -2,7 +2,7 @@ package com.cognitive.newswizard.api.vo.newsfeed;
 
 
 /**
- * Contains all parameters needed to create a new Feed Group Entry, with parent group id
+ * Contains all parameters needed to create a new Feed Group Entry, with parent source group id
  * @author tiago
  *
  */
@@ -14,19 +14,19 @@ public class CreateFeedGroupEntryParamsVO {
 	
 	private String url;
 	
-	private String feedGroupId;
+	private String feedSourceGroupId;
 	
 	private String code;
 
 	public CreateFeedGroupEntryParamsVO() {
 	}
 	
-	public CreateFeedGroupEntryParamsVO(final String id, final String name, final String url, final String feedGroupId, final String code) {
+	public CreateFeedGroupEntryParamsVO(final String id, final String name, final String url, final String feedSourceGroupId, final String code) {
 		super();
 		this.id = id;
 		this.name = name;
 		this.url = url;
-		this.feedGroupId = feedGroupId;
+		this.feedSourceGroupId = feedSourceGroupId;
 		this.code = code;
 	}
 
@@ -54,12 +54,12 @@ public class CreateFeedGroupEntryParamsVO {
 		this.url = url;
 	}
 
-	public String getFeedGroupId() {
-		return feedGroupId;
+	public String getFeedSourceGroupId() {
+		return feedSourceGroupId;
 	}
 
-	public void setFeedGroupId(String feedGroupId) {
-		this.feedGroupId = feedGroupId;
+	public void setFeedSourceGroupId(String feedSourceGroupId) {
+		this.feedSourceGroupId = feedSourceGroupId;
 	}
 
 	public String getCode() {

@@ -32,7 +32,7 @@ public class FeedGroupEntryResource {
 				createParamsVO.getUrl(), 
 				null,
 				createParamsVO.getCode());
-		return feedGroupEntryService.create(feedGroupEntryVO, createParamsVO.getFeedGroupId());
+		return feedGroupEntryService.create(feedGroupEntryVO, createParamsVO.getFeedSourceGroupId());
 	}
 
 }

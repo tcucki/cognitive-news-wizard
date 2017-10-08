@@ -8,8 +8,8 @@ import com.cognitive.newswizard.service.entity.FeedGroupEntryEntity;
 
 public class FeedGroupEntryTranslator {
 
-	public static FeedGroupEntryEntity toEntity(final FeedGroupEntryVO vo, final String feedGroupId) {
-		return new FeedGroupEntryEntity(vo.getId(), vo.getName(), vo.getUrl(), vo.getLastRead(), feedGroupId, vo.getCode());
+	public static FeedGroupEntryEntity toEntity(final FeedGroupEntryVO vo, final String feedSourceGroupId) {
+		return new FeedGroupEntryEntity(vo.getId(), vo.getName(), vo.getUrl(), vo.getLastRead(), feedSourceGroupId, vo.getCode());
 	}
 	
 	public static FeedGroupEntryVO toValueObject(final FeedGroupEntryEntity entity) {

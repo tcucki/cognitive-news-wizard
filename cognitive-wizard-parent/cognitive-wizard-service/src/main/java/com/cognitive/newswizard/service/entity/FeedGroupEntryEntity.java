@@ -15,6 +15,9 @@ public class FeedGroupEntryEntity {
 	
 	private final Long lastRead;
 	
+	/**
+	 * Points to parent feed source group
+	 */
 	private final String feedGroupId;
 	
 	private final String code;

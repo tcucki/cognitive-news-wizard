@@ -17,9 +17,9 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.SchedulingConfigurer;
 import org.springframework.scheduling.config.ScheduledTaskRegistrar;
 
-import com.cognitive.newswizard.agent.client.FeedGroupClient;
+import com.cognitive.newswizard.agent.client.FeedSourceGroupClient;
 import com.cognitive.newswizard.agent.client.RawFeedEntryClient;
-import com.cognitive.newswizard.api.vo.newsfeed.FeedGroupVO;
+import com.cognitive.newswizard.api.vo.newsfeed.FeedSourceGroupVO;
 
 @Configuration
 @EnableScheduling
@@ -27,13 +27,13 @@ public class Scheduler implements SchedulingConfigurer {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(Scheduler.class);
 	
-	private final FeedGroupClient feedGroupClient;
+	private final FeedSourceGroupClient feedSourceGroupClient;
 
 	private final RawFeedEntryClient rawFeedEntryClient;
 
 	@Autowired
-	public Scheduler(final FeedGroupClient feedGroupClient, final RawFeedEntryClient rawFeedEntryClient) {
-		this.feedGroupClient = feedGroupClient;
+	public Scheduler(final FeedSourceGroupClient feedSourceGroupClient, final RawFeedEntryClient rawFeedEntryClient) {
+		this.feedSourceGroupClient = feedSourceGroupClient;
 		this.rawFeedEntryClient = rawFeedEntryClient;
 	}
 
@@ -46,10 +46,10 @@ public class Scheduler implements SchedulingConfigurer {
     public void configureTasks(final ScheduledTaskRegistrar taskRegistrar) {
 		LOGGER.info("Configuring feed read agensts");
 		
-		final FeedGroupVO[] feedGroups = feedGroupClient.getAll();
+		final FeedSourceGroupVO[] feedSourceGroups = feedSourceGroupClient.getAll();
 		
-		for (FeedGroupVO feedGroup : feedGroups) {
-				final FeedReaderAgent agent = new FeedReaderAgent(feedGroup, rawFeedEntryClient);
+		for (FeedSourceGroupVO feedSourceGroup : feedSourceGroups) {
+				final FeedReaderAgent agent = new FeedReaderAgent(feedSourceGroup, rawFeedEntryClient);
 				
 	        taskRegistrar.setScheduler(taskExecutor());
 	        taskRegistrar.addTriggerTask(
@@ -68,14 +68,14 @@ public class Scheduler implements SchedulingConfigurer {
 		                        nextExecutionTime.add(Calendar.SECOND, 10);
 	                        } else {
 	                        	// add configured delay period
-		                        nextExecutionTime.add(Calendar.SECOND, feedGroup.getRefreshPeriod().intValue());
+		                        nextExecutionTime.add(Calendar.SECOND, feedSourceGroup.getRefreshPeriod().intValue());
 	                        }
 	                        return nextExecutionTime.getTime();
 	                    }
 	                }
 	            
 			);
-	        LOGGER.info("Agent reader for group {} configured", feedGroup.getName());
+	        LOGGER.info("Agent reader for group {} configured", feedSourceGroup.getName());
 		}
 		
     }

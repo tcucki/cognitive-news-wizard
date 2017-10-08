@@ -3,8 +3,8 @@ package com.cognitive.newswizard.service.entity;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-@Document(collection = "feed_group")
-public class FeedGroupEntity {
+@Document(collection = "feed_source_group")
+public class FeedSourceGroupEntity {
 
 	/**
 	 * Entity's ID
@@ -32,7 +32,7 @@ public class FeedGroupEntity {
 	 */
 	private final Long refreshPeriod;
 
-	public FeedGroupEntity(final String id, final String name, final String description,
+	public FeedSourceGroupEntity(final String id, final String name, final String description,
 			final Long creationDateTime, final Long refreshPeriod) {
 		super();
 		this.id = id;
