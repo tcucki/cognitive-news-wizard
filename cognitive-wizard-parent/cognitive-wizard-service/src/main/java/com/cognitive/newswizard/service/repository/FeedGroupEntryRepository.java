@@ -8,5 +8,5 @@ import com.cognitive.newswizard.service.entity.FeedGroupEntryEntity;
 
 public interface FeedGroupEntryRepository extends MongoRepository<FeedGroupEntryEntity, String> {
 
-	List<FeedGroupEntryEntity> findByFeedGroupId(final String feedGroupId);
+	List<FeedGroupEntryEntity> findByFeedSourceGroupId(final String feedSourceGroupId);
 }

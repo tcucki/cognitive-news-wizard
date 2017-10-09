@@ -45,9 +45,9 @@ public class FeedSourceGroupService {
 	public List<FeedSourceGroupVO> getAll() {
 		final List<FeedSourceGroupVO> feedSourceGroups = new ArrayList<>(); 
 		final List<FeedSourceGroupEntity> feedSourceGroupEntities = feedSourceGroupRepository.findAll();
-		feedSourceGroupEntities.forEach(entity -> {
-			final List<FeedGroupEntryEntity> entryEntities = feedGroupEntryRepository.findByFeedGroupId(entity.getId());
-			feedSourceGroups.add(FeedSourceGroupTranslator.toValueObject(entity, FeedGroupEntryTranslator.toValueObjects(entryEntities)));
+		feedSourceGroupEntities.forEach(feedSourceGroupEntity -> {
+			final List<FeedGroupEntryEntity> entryEntities = feedGroupEntryRepository.findByFeedSourceGroupId(feedSourceGroupEntity.getId());
+			feedSourceGroups.add(FeedSourceGroupTranslator.toValueObject(feedSourceGroupEntity, FeedGroupEntryTranslator.toValueObjects(entryEntities)));
 		});
 		return feedSourceGroups;
 		

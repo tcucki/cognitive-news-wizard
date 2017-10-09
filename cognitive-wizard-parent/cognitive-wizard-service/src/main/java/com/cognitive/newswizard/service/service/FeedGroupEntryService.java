@@ -37,7 +37,7 @@ public class FeedGroupEntryService {
 	}
 
 	public FeedGroupEntryVO create(final FeedGroupEntryVO feedGroupEntryVO, final String feedSourceGroupId) {
-		validateFeedGroupId(feedSourceGroupId);
+		validateFeedSourceGroupId(feedSourceGroupId);
 		LOGGER.info("Creating new feed group entry: {}", feedGroupEntryVO);
 		final FeedGroupEntryEntity entity = FeedGroupEntryTranslator.toEntity(feedGroupEntryVO, feedSourceGroupId);
 		final FeedGroupEntryVO saved = FeedGroupEntryTranslator.toValueObject(feedGroupEntryRepository.save(entity));
@@ -52,7 +52,7 @@ public class FeedGroupEntryService {
 		return Optional.empty();
 	}
 
-	private void validateFeedGroupId(final String feedSourceGroupId) {
+	private void validateFeedSourceGroupId(final String feedSourceGroupId) {
 		if (StringUtils.isEmpty(feedSourceGroupId)) {
 			throw new IllegalArgumentException("Empty Feed Source Group id is not allowed");
 		}
