@@ -33,7 +33,7 @@ public class RawFeedEntryAggregationRepositoryImpl implements RawFeedEntryAggreg
 				
 				RawFeedEntryEntity.class,
 				Aggregation.match(Criteria.where("publishedDateTime").gte(start).lte(end)),
-				Aggregation.group("feedGroupEntryId").count().as("count")
+				Aggregation.group("feedSourceId").count().as("count")
 		);
 		
 		return mongoTemplate.aggregate(aggregation, COLLECTION_NAME, CountRawFeedEntryByPeriodProjection.class).getMappedResults();

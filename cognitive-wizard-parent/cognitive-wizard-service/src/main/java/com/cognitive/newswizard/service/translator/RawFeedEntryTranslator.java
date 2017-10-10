@@ -13,7 +13,7 @@ public class RawFeedEntryTranslator {
 				valueObject.getAddress(), 
 				valueObject.getPublishedDateTime(), 
 				valueObject.getContent(), 
-				valueObject.getFeedGroupEntryId(),
+				valueObject.getFeedSourceId(),
 				valueObject.getCompactContent());
 	}
 	
@@ -25,7 +25,7 @@ public class RawFeedEntryTranslator {
 				entity.getAddress(), 
 				entity.getPublishedDateTime(), 
 				entity.getContent(), 
-				entity.getFeedGroupEntryId(),
+				entity.getFeedSourceId(),
 				entity.getCompactContent());
 	}
 }

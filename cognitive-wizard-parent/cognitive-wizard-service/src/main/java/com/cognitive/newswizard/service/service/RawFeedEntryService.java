@@ -14,7 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import com.cognitive.newswizard.api.vo.newsfeed.FeedGroupEntryVO;
+import com.cognitive.newswizard.api.vo.newsfeed.FeedSourceVO;
 import com.cognitive.newswizard.api.vo.newsfeed.RawFeedEntryVO;
 import com.cognitive.newswizard.api.vo.newsfeed.RawFeedReportItem;
 import com.cognitive.newswizard.service.entity.RawFeedEntryEntity;
@@ -37,39 +37,39 @@ public class RawFeedEntryService {
 
 	private final FeedProcessor feedProcessor;
 	
-	private final FeedGroupEntryService feedGroupEntryService;
+	private final FeedSourceService feedSourceService;
 
 	@Autowired
 	public RawFeedEntryService(
 			final RawFeedEntryRepository rawFeedEntryRepository,
 			final RawFeedEntryAggregationRepository rawFeedEntryAggregationRepository,
 			final FeedProcessor feedProcessor,
-			final FeedGroupEntryService feedGroupEntryService) {
+			final FeedSourceService feedSourceService) {
 		this.rawFeedEntryRepository = rawFeedEntryRepository;
 		this.rawFeedEntryAggregationRepository = rawFeedEntryAggregationRepository;
 		this.feedProcessor = feedProcessor;
-		this.feedGroupEntryService = feedGroupEntryService;
+		this.feedSourceService = feedSourceService;
 	}
 
 	public RawFeedEntryVO create(final RawFeedEntryVO rawFeedEntryVO) {
-		final FeedGroupEntryVO feedGroupEntryVO = feedGroupEntryService.getFromSnapshotOrDefault(rawFeedEntryVO.getFeedGroupEntryId());
+		final FeedSourceVO feedSourceVO = feedSourceService.getFromSnapshotOrDefault(rawFeedEntryVO.getFeedSourceId());
 		final RawFeedEntryEntity existingEntity = rawFeedEntryRepository.findByFeedEntryId(rawFeedEntryVO.getFeedEntryId());
 		if (existingEntity != null) {
-			LOGGER.info("[{}] Skipping {} as it is alredy registered", feedGroupEntryVO.getCode(), rawFeedEntryVO.getFeedEntryId());
+			LOGGER.info("[{}] Skipping {} as it is alredy registered", feedSourceVO.getCode(), rawFeedEntryVO.getFeedEntryId());
 			return RawFeedEntryTranslator.toValueObject(existingEntity);
 		}
-		LOGGER.info("[{}] Creating new raw feed entry {}", feedGroupEntryVO.getCode(), rawFeedEntryVO.getTitle());
+		LOGGER.info("[{}] Creating new raw feed entry {}", feedSourceVO.getCode(), rawFeedEntryVO.getTitle());
 		rawFeedEntryVO.setCompactContent(ZipUtils.compress(rawFeedEntryVO.getContent()));
 		rawFeedEntryVO.setContent(null);
 		final RawFeedEntryEntity entity = RawFeedEntryTranslator.toEntity(rawFeedEntryVO);
 		final RawFeedEntryVO persisted = RawFeedEntryTranslator.toValueObject(rawFeedEntryRepository.save(entity));
 		try {
-			feedProcessor.processFeed(feedGroupEntryVO.getCode(), persisted);
+			feedProcessor.processFeed(feedSourceVO.getCode(), persisted);
 		} catch (IllegalArgumentException iae) {
 			LOGGER.warn("[{}] IllegalArgumentException on processing feed. "
 					+ "RawFeed is being deleted.\n"
-					+ "FeedGroupEntryId: {}\nFeed title: {}\nError: {}", 
-					feedGroupEntryVO.getCode(), rawFeedEntryVO.getFeedGroupEntryId(), rawFeedEntryVO.getTitle(), iae.getMessage());
+					+ "FeedSourceId: {}\nFeed title: {}\nError: {}", 
+					feedSourceVO.getCode(), rawFeedEntryVO.getFeedSourceId(), rawFeedEntryVO.getTitle(), iae.getMessage());
 			rawFeedEntryRepository.delete(persisted.getId());
 			return null;
 		}
@@ -101,7 +101,7 @@ public class RawFeedEntryService {
 					actualRawFeedEntryEntity.getAddress(), 
 					actualRawFeedEntryEntity.getPublishedDateTime(), 
 					null, 
-					actualRawFeedEntryEntity.getFeedGroupEntryId(), 
+					actualRawFeedEntryEntity.getFeedSourceId(), 
 					compressedContent);
 			rawFeedEntryRepository.save(compactedRawFeedEntryEntity);
 			LOGGER.info(String.format("Entry # %4d - %.2f compact ratio", counter, ratio * 100));
@@ -128,7 +128,7 @@ public class RawFeedEntryService {
 		
 		return new RawFeedReportItem(
 				item.getId(),
-				feedGroupEntryService.getFromSnapshotOrDefault(item.getId()).getName(),
+				feedSourceService.getFromSnapshotOrDefault(item.getId()).getName(),
 				item.getCount());
 	}
 }

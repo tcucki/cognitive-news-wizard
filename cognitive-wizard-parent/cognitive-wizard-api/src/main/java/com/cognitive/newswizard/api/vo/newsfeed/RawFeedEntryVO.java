@@ -27,7 +27,7 @@ public class RawFeedEntryVO {
 
 	private String content;
 	
-	private String feedGroupEntryId;
+	private String feedSourceId;
 	
 	private byte[] compactContent;
 	
@@ -37,7 +37,7 @@ public class RawFeedEntryVO {
 
 	public RawFeedEntryVO(final String id, final String feedEntryId, final String title,
 			final String address, final Long publishedDateTime,
-			final String content, final String feedGroupEntryId,
+			final String content, final String feedSourceId,
 			final byte[] compactContent) {
 		super();
 		this.id = id;
@@ -46,7 +46,7 @@ public class RawFeedEntryVO {
 		this.address = address;
 		this.publishedDateTime = publishedDateTime;
 		this.content = content;
-		this.feedGroupEntryId = feedGroupEntryId;
+		this.feedSourceId = feedSourceId;
 		this.compactContent = compactContent;
 	}
 
@@ -109,8 +109,8 @@ public class RawFeedEntryVO {
 		this.content = content;
 	}
 
-	public String getFeedGroupEntryId() {
-		return feedGroupEntryId;
+	public String getFeedSourceId() {
+		return feedSourceId;
 	}
 	
 	public byte[] getCompactContent() {

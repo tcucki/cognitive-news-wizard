@@ -2,7 +2,7 @@ package com.cognitive.newswizard.service.translator;
 
 import java.util.List;
 
-import com.cognitive.newswizard.api.vo.newsfeed.FeedGroupEntryVO;
+import com.cognitive.newswizard.api.vo.newsfeed.FeedSourceVO;
 import com.cognitive.newswizard.api.vo.newsfeed.FeedSourceGroupVO;
 import com.cognitive.newswizard.service.entity.FeedSourceGroupEntity;
 
@@ -16,7 +16,7 @@ public class FeedSourceGroupTranslator {
 
 	public static FeedSourceGroupVO toValueObject(
 			final FeedSourceGroupEntity feedSourceGroupEntity,
-			final List<FeedGroupEntryVO> entries) {
+			final List<FeedSourceVO> entries) {
 		return new FeedSourceGroupVO(feedSourceGroupEntity.getId(),
 				feedSourceGroupEntity.getName(), feedSourceGroupEntity.getDescription(),
 				feedSourceGroupEntity.getCreationDateTime(),

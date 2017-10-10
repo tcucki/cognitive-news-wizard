@@ -2,8 +2,13 @@ package com.cognitive.newswizard.api.vo.newsfeed;
 
 import com.cognitive.newswizard.api.vo.AbstractValueObject;
 
+/**
+ * Represents a source of RSS Feed
+ * @author tiago
+ *
+ */
 @SuppressWarnings("serial")
-public class FeedGroupEntryVO extends AbstractValueObject {
+public class FeedSourceVO extends AbstractValueObject {
 
 	private String id;
 	
@@ -15,11 +20,11 @@ public class FeedGroupEntryVO extends AbstractValueObject {
 	
 	private String code;
 	
-	public FeedGroupEntryVO() {
+	public FeedSourceVO() {
 		super();
 	}
 
-	public FeedGroupEntryVO(final String id, final String name, final String url, final Long lastRead, final String code) {
+	public FeedSourceVO(final String id, final String name, final String url, final Long lastRead, final String code) {
 		super();
 		this.id = id;
 		this.name = name;
@@ -84,7 +89,7 @@ public class FeedGroupEntryVO extends AbstractValueObject {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		FeedGroupEntryVO other = (FeedGroupEntryVO) obj;
+		FeedSourceVO other = (FeedSourceVO) obj;
 		if (id == null) {
 			if (other.id != null)
 				return false;

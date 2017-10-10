@@ -25,7 +25,7 @@ public class RawFeedEntryEntity {
 
 	private final String content;
 
-	private final String feedGroupEntryId;
+	private final String feedSourceId;
 	
 	private final byte[] compactContent;
 
@@ -36,7 +36,7 @@ public class RawFeedEntryEntity {
 			final String address, 
 			final Long publishedDateTime, 
 			final String content,
-			final String feedGroupEntryId, 
+			final String feedSourceId, 
 			final byte[] compactContent) {
 		super();
 		this.id = id;
@@ -45,7 +45,7 @@ public class RawFeedEntryEntity {
 		this.address = address;
 		this.publishedDateTime = publishedDateTime;
 		this.content = content;
-		this.feedGroupEntryId = feedGroupEntryId;
+		this.feedSourceId = feedSourceId;
 		this.compactContent = compactContent;
 	}
 
@@ -73,8 +73,8 @@ public class RawFeedEntryEntity {
 		return content;
 	}
 
-	public String getFeedGroupEntryId() {
-		return feedGroupEntryId;
+	public String getFeedSourceId() {
+		return feedSourceId;
 	}
 	
 	public byte[] getCompactContent() {

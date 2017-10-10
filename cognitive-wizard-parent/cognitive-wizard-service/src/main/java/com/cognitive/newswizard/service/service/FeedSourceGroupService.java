@@ -11,10 +11,10 @@ import org.springframework.stereotype.Component;
 
 import com.cognitive.newswizard.api.vo.newsfeed.FeedSourceGroupVO;
 import com.cognitive.newswizard.service.entity.FeedSourceGroupEntity;
-import com.cognitive.newswizard.service.entity.FeedGroupEntryEntity;
-import com.cognitive.newswizard.service.repository.FeedGroupEntryRepository;
+import com.cognitive.newswizard.service.entity.FeedSourceEntity;
+import com.cognitive.newswizard.service.repository.FeedSourceRepository;
 import com.cognitive.newswizard.service.repository.FeedSourceGroupRepository;
-import com.cognitive.newswizard.service.translator.FeedGroupEntryTranslator;
+import com.cognitive.newswizard.service.translator.FeedSourceTranslator;
 import com.cognitive.newswizard.service.translator.FeedSourceGroupTranslator;
 
 @Component
@@ -23,13 +23,13 @@ public class FeedSourceGroupService {
 	private final Logger LOGGER = LoggerFactory.getLogger(FeedSourceGroupService.class);
 
 	private final FeedSourceGroupRepository feedSourceGroupRepository;
-	private final FeedGroupEntryRepository feedGroupEntryRepository;
+	private final FeedSourceRepository feedSourceRepository;
 
 	@Autowired
-	public FeedSourceGroupService(final FeedSourceGroupRepository feedSourceGroupRepository, final FeedGroupEntryRepository feedGroupEntryRepository) {
+	public FeedSourceGroupService(final FeedSourceGroupRepository feedSourceGroupRepository, final FeedSourceRepository feedSourceRepository) {
 		super();
 		this.feedSourceGroupRepository = feedSourceGroupRepository;
-		this.feedGroupEntryRepository = feedGroupEntryRepository;
+		this.feedSourceRepository = feedSourceRepository;
 	}
 
 	public FeedSourceGroupVO create(FeedSourceGroupVO feedSourceGroupVO) {
@@ -46,8 +46,8 @@ public class FeedSourceGroupService {
 		final List<FeedSourceGroupVO> feedSourceGroups = new ArrayList<>(); 
 		final List<FeedSourceGroupEntity> feedSourceGroupEntities = feedSourceGroupRepository.findAll();
 		feedSourceGroupEntities.forEach(feedSourceGroupEntity -> {
-			final List<FeedGroupEntryEntity> entryEntities = feedGroupEntryRepository.findByFeedSourceGroupId(feedSourceGroupEntity.getId());
-			feedSourceGroups.add(FeedSourceGroupTranslator.toValueObject(feedSourceGroupEntity, FeedGroupEntryTranslator.toValueObjects(entryEntities)));
+			final List<FeedSourceEntity> entryEntities = feedSourceRepository.findByFeedSourceGroupId(feedSourceGroupEntity.getId());
+			feedSourceGroups.add(FeedSourceGroupTranslator.toValueObject(feedSourceGroupEntity, FeedSourceTranslator.toValueObjects(entryEntities)));
 		});
 		return feedSourceGroups;
 		

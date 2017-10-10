@@ -13,9 +13,9 @@ Creates a Feed Source Group
 - GET `/feedgroup/` returns `List<FeedGroupVO>`  
 Lists all feed groups
 
-### /feedgroupentry
+### /feedsource
 
-- POST `/feedgroupentry/create` `CreateFeedGroupEntryParamsVO` returns `FeedGroupEntryVO`  
+- POST `/feedsource/create` `CreateFeedSourceParamsVO` returns `FeedSourceVO`  
 Creates a new feed entry for a group
 
 ### /rawfeedentry
@@ -27,6 +27,9 @@ Skips feed registration whether finds other feed with same `feedEntryId`
 
 - POST `/rawfeedentry/compactall` returns `ok` **  
 Compacts contents for all feeds
+
+- GET `/rawfeedentry/report/period?start&end` returns List<RawFeedReportItem>
+Reports all raw feed entry for a given period. Dates the on form yyymmdd
 
 ### /feedprocessor
 

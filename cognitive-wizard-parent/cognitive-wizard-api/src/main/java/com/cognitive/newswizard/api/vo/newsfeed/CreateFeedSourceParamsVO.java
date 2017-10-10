@@ -2,11 +2,11 @@ package com.cognitive.newswizard.api.vo.newsfeed;
 
 
 /**
- * Contains all parameters needed to create a new Feed Group Entry, with parent source group id
+ * Contains all parameters needed to create a new Feed Source, with parent source group id
  * @author tiago
  *
  */
-public class CreateFeedGroupEntryParamsVO {
+public class CreateFeedSourceParamsVO {
 
 	private String id;
 	
@@ -18,10 +18,10 @@ public class CreateFeedGroupEntryParamsVO {
 	
 	private String code;
 
-	public CreateFeedGroupEntryParamsVO() {
+	public CreateFeedSourceParamsVO() {
 	}
 	
-	public CreateFeedGroupEntryParamsVO(final String id, final String name, final String url, final String feedSourceGroupId, final String code) {
+	public CreateFeedSourceParamsVO(final String id, final String name, final String url, final String feedSourceGroupId, final String code) {
 		super();
 		this.id = id;
 		this.name = name;

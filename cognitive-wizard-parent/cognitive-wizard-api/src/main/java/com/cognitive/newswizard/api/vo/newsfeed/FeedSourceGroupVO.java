@@ -37,14 +37,14 @@ public class FeedSourceGroupVO extends AbstractValueObject {
 	 */
 	private Long refreshPeriod;
 	
-	private List<FeedGroupEntryVO> entries;
+	private List<FeedSourceVO> entries;
 	
 	public FeedSourceGroupVO() {
 	}
 
 	public FeedSourceGroupVO(final String id, final String name,
 			final String description, final Long creationDateTime,
-			final Long refreshPeriod, final List<FeedGroupEntryVO> entries) {
+			final Long refreshPeriod, final List<FeedSourceVO> entries) {
 		super();
 		this.id = id;
 		this.name = name;
@@ -94,11 +94,11 @@ public class FeedSourceGroupVO extends AbstractValueObject {
 		this.refreshPeriod = refreshPeriod;
 	}
 
-	public List<FeedGroupEntryVO> getEntries() {
+	public List<FeedSourceVO> getEntries() {
 		return entries;
 	}
 
-	public void setEntries(List<FeedGroupEntryVO> entries) {
+	public void setEntries(List<FeedSourceVO> entries) {
 		this.entries = entries;
 	}
 

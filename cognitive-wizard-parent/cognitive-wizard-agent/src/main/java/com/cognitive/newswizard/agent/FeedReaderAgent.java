@@ -18,7 +18,7 @@ import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import com.cognitive.newswizard.agent.client.RawFeedEntryClient;
-import com.cognitive.newswizard.api.vo.newsfeed.FeedGroupEntryVO;
+import com.cognitive.newswizard.api.vo.newsfeed.FeedSourceVO;
 import com.cognitive.newswizard.api.vo.newsfeed.FeedSourceGroupVO;
 import com.cognitive.newswizard.api.vo.newsfeed.RawFeedEntryVO;
 import com.rometools.rome.feed.synd.SyndEntry;
@@ -60,7 +60,7 @@ public class FeedReaderAgent {
 		LOGGER.info("All feeds processed for group [{} - '{}'] in {} secods\n************************************************************************************", feedSourceGroup.getId(), feedSourceGroup.getName(), numberFormat.format(seconds));
 	}
 
-	private void processFeed(final FeedGroupEntryVO feedVO) {
+	private void processFeed(final FeedSourceVO feedVO) {
 		final Long start = System.currentTimeMillis();
 		LOGGER.info("[{}] Reading feed {} - {}", feedVO.getCode(), feedVO.getName(), feedVO.getUrl());
 		try {
@@ -74,64 +74,64 @@ public class FeedReaderAgent {
 		LOGGER.info("[{}] Finished processing feed {} in {} seconds - {}\n---------------------------------------------------------------------", feedVO.getCode(), feedVO.getName(), numberFormat.format(seconds), feedVO.getUrl());
 	}
 
-	private void processFeedEntry(final SyndEntry feedEntry, final String feedGroupEntryId, final String feedGroupEntryName, final String feedGroupEntryCode) {
+	private void processFeedEntry(final SyndEntry feedEntry, final String feedSourceId, final String feedSourceName, final String feedSourceCode) {
 		if (processedFeedEntryUris.contains(feedEntry.getUri())) {
 			return;
 		};
 		// TODO - verify whether feedEntry has content, so it doesn't need to be re-downloaded (like Brasil - Exame)
 		final Long start = System.currentTimeMillis();
-		LOGGER.info("[{}] Processing feed entry {} - {} '{}'", feedGroupEntryCode, feedEntry.getPublishedDate(), feedEntry.getTitle(), feedEntry.getLink());
+		LOGGER.info("[{}] Processing feed entry {} - {} '{}'", feedSourceCode, feedEntry.getPublishedDate(), feedEntry.getTitle(), feedEntry.getLink());
 		String feedEntryContent;
 		try {
-			feedEntryContent = readFeedEntryContent(feedEntry.getLink(), feedGroupEntryCode);
+			feedEntryContent = readFeedEntryContent(feedEntry.getLink(), feedSourceCode);
 			if (StringUtils.isEmpty(feedEntryContent)) {
-				LOGGER.warn("[{}] Empty content for feed {}\n{}", feedGroupEntryCode, feedEntry.getTitle(), feedEntry.getLink());
+				LOGGER.warn("[{}] Empty content for feed {}\n{}", feedSourceCode, feedEntry.getTitle(), feedEntry.getLink());
 			}
 		} catch (Exception e) {
-			LOGGER.error("[{}] Exception while reading feed content [{} - {} | {} - {}]", feedGroupEntryCode, feedSourceGroup.getId(), feedSourceGroup.getName(), feedGroupEntryId, feedGroupEntryName, e);
+			LOGGER.error("[{}] Exception while reading feed content [{} - {} | {} - {}]", feedSourceCode, feedSourceGroup.getId(), feedSourceGroup.getName(), feedSourceId, feedSourceName, e);
 			return;
 		}
 		final RawFeedEntryVO rawFeedEntryVO = new RawFeedEntryVO(
 				null, feedEntry.getUri(), feedEntry.getTitle(), feedEntry.getLink(), 
 				feedEntry.getPublishedDate() == null ? null : feedEntry.getPublishedDate().getTime(), 
-				feedEntryContent, feedGroupEntryId, null);
+				feedEntryContent, feedSourceId, null);
 		try {
 			final Long serviceStart = System.currentTimeMillis();
-			LOGGER.info("[{}] Sending entry to service {} '{}'", feedGroupEntryCode, feedEntry.getTitle(), feedEntry.getLink());
+			LOGGER.info("[{}] Sending entry to service {} '{}'", feedSourceCode, feedEntry.getTitle(), feedEntry.getLink());
 			if (rawFeedEntryClient.create(rawFeedEntryVO) != null) {
 				processedFeedEntryUris.add(feedEntry.getUri());
 			}
 			final Double seconds = (System.currentTimeMillis() - serviceStart) / 1000d;
-			LOGGER.info("[{}] Processing feed time on service {} seconds entry {} '{}'", feedGroupEntryCode, numberFormat.format(seconds), feedEntry.getTitle(), feedEntry.getLink());
+			LOGGER.info("[{}] Processing feed time on service {} seconds entry {} '{}'", feedSourceCode, numberFormat.format(seconds), feedEntry.getTitle(), feedEntry.getLink());
 		} catch (HttpServerErrorException e) {
-			LOGGER.error("[{}] Exception on processing/persisting feed entry [{} - {} | {} - {}]", feedGroupEntryCode, feedSourceGroup.getId(), feedSourceGroup.getName(), feedGroupEntryId, feedGroupEntryName, e);
+			LOGGER.error("[{}] Exception on processing/persisting feed entry [{} - {} | {} - {}]", feedSourceCode, feedSourceGroup.getId(), feedSourceGroup.getName(), feedSourceId, feedSourceName, e);
 		}
 		final Double totalSeconds = (System.currentTimeMillis() - start) / 1000d;
-		LOGGER.info("[{}] Total processing feed time {} seconds entry {} '{}'", feedGroupEntryCode, numberFormat.format(totalSeconds), feedEntry.getTitle(), feedEntry.getLink());
+		LOGGER.info("[{}] Total processing feed time {} seconds entry {} '{}'", feedSourceCode, numberFormat.format(totalSeconds), feedEntry.getTitle(), feedEntry.getLink());
 	}
 	
-	private String readFeedEntryContent(final String link, final String feedGroupEntryCode) {
+	private String readFeedEntryContent(final String link, final String feedSourceCode) {
 		
 		final Long start = System.currentTimeMillis();
-		LOGGER.info("[{}] Reading content from {}", feedGroupEntryCode, link);
+		LOGGER.info("[{}] Reading content from {}", feedSourceCode, link);
 
-		final String content = readFeedEntryContentInternal(link, feedGroupEntryCode, 0);
+		final String content = readFeedEntryContentInternal(link, feedSourceCode, 0);
 
 		final Double seconds = (System.currentTimeMillis() - start) / 1000d;
 
-		LOGGER.info("[{}] Content read in {} seconds from {}", feedGroupEntryCode, numberFormat.format(seconds), link);
+		LOGGER.info("[{}] Content read in {} seconds from {}", feedSourceCode, numberFormat.format(seconds), link);
 
 		return content;
 	}
 
-	private String readFeedEntryContentInternal(final String link, final String feedGroupEntryCode, final int count) {
+	private String readFeedEntryContentInternal(final String link, final String feedSourceCode, final int count) {
 		final ResponseEntity<String> response = restTemplate.exchange (link, HttpMethod.GET, null, String.class);
 
 		final HttpHeaders headers = response.getHeaders();
 		if (response.getStatusCode().equals(HttpStatus.MOVED_PERMANENTLY) && headers.getLocation() != null) {
 			final String newUrl = headers.getLocation().toASCIIString();
-			LOGGER.info("[{}] Redirecting\nfrom:\t{}\nto:\t{}\ncount:\t{}", feedGroupEntryCode, link, newUrl, count);
-			return readFeedEntryContentInternal(newUrl, feedGroupEntryCode, count + 1);
+			LOGGER.info("[{}] Redirecting\nfrom:\t{}\nto:\t{}\ncount:\t{}", feedSourceCode, link, newUrl, count);
+			return readFeedEntryContentInternal(newUrl, feedSourceCode, count + 1);
 		}
 		return response.getBody();
 	}
