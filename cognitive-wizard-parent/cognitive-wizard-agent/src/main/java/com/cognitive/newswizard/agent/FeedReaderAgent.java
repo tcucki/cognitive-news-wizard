@@ -93,7 +93,7 @@ public class FeedReaderAgent {
 		}
 		final RawFeedEntryVO rawFeedEntryVO = new RawFeedEntryVO(
 				null, feedEntry.getUri(), feedEntry.getTitle(), feedEntry.getLink(), 
-				feedEntry.getPublishedDate() == null ? null : feedEntry.getPublishedDate().getTime(), 
+				feedEntry.getPublishedDate() == null ? System.currentTimeMillis() : feedEntry.getPublishedDate().getTime(), 
 				feedEntryContent, feedSourceId, null);
 		try {
 			final Long serviceStart = System.currentTimeMillis();
